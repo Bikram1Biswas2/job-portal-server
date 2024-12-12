@@ -49,6 +49,13 @@ async function run() {
         res.send(result)
     })
 
+    // add new job
+    app.post('/jobs',async(req,res)=>{
+        const newJob = req.body 
+        const result = await jobsCollection.insertOne(newJob)
+        res.send(result)
+    })
+
     // job application apis 
 
     // get job apply data by email
