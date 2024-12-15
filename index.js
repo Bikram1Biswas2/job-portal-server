@@ -34,6 +34,14 @@ async function run() {
     const jobsCollection = client.db('job_portal').collection('jobs')
     const jobApplicationCollection = client.db('job_portal').collection('job_applications')
 
+
+    // Auth Related apis
+    app.post('/jwt',async(req,res)=>{
+      const user = req.body 
+      const token = jwt.sign(user,'secret',{expiresIn: '1h'})
+      res.send(token)
+    })
+
     // get all jobs
     app.get('/jobs',async(req,res)=>{
      const email = req.params.email 
