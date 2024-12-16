@@ -56,11 +56,19 @@ async function run() {
     const jobsCollection = client.db('job_portal').collection('jobs')
     const jobApplicationCollection = client.db('job_portal').collection('job_applications')
 
+    // remove the token when logout
+    app.post('/logout',async(req,res)=>{
+      res.clearCookie('token',{
+        httpOnly:true,
+        secure:false
+      })
+      .send({success: true})
+    })
 
     // Auth Related apis
     app.post('/jwt',async(req,res)=>{
       const user = req.body 
-      const token = jwt.sign(user,process.env.JWT_SECRET,{expiresIn: '1h'})
+      const token = jwt.sign(user,process.env.ACCESS_TOKEN_SECRET,{expiresIn: '1h'})
       res
       .cookie('token',token,{
         httpOnly: true,
@@ -103,7 +111,9 @@ async function run() {
         const email = req.query.email 
         const query = {applicant_email:email}
 
-        console.log('cuk cuk cookies',req.cookies);
+       if(req.user.email !== req.query.email){
+        return res.status(403).send({message: 'forbidden access'})
+       }
 
         const result = await jobApplicationCollection.find(query).toArray()
 
